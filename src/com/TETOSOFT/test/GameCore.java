@@ -26,6 +26,7 @@ public abstract class GameCore {
     };
 
     private boolean isRunning;
+    private boolean isPaused;
     protected ScreenManager screen;
 
 
@@ -36,7 +37,19 @@ public abstract class GameCore {
         isRunning = false;
     }
 
+    public void pause(){
+        isPaused = true;
+    }
 
+    public void unPause()
+    {
+        isPaused = false;
+    }
+
+    public boolean isPaused()
+    {
+        return isPaused;
+    }
     /**
         Calls init() and gameLoop()
     */
@@ -92,6 +105,7 @@ public abstract class GameCore {
         window.setForeground(Color.WHITE);
 
         isRunning = true;
+        isPaused = false;
     }
 
 

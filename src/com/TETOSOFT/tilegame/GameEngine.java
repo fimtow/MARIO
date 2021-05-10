@@ -32,9 +32,13 @@ public class GameEngine extends GameCore
     private GameAction moveRight;
     private GameAction jump;
     private GameAction exit;
+    private GameAction pause;
     private int collectedStars=0;
     private int numLives=6;
    
+
+    private boolean gameOver;
+
     public void init()
     {
         super.init();
@@ -51,6 +55,10 @@ public class GameEngine extends GameCore
         
         // load first map
         map = mapLoader.loadNextMap();
+
+
+        //init gameover variable
+        gameOver = false;
     }
     
     
@@ -68,7 +76,7 @@ public class GameEngine extends GameCore
         moveRight = new GameAction("moveRight");
         jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
         exit = new GameAction("exit",GameAction.DETECT_INITAL_PRESS_ONLY);
-        
+        pause = new GameAction("pause",GameAction.DETECT_INITAL_PRESS_ONLY);
         inputManager = new InputManager(screen.getFullScreenWindow());
         inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
         
@@ -76,6 +84,7 @@ public class GameEngine extends GameCore
         inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
         inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
         inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
+        inputManager.mapToKey(pause, KeyEvent.VK_P);
     }
     
     
@@ -85,7 +94,12 @@ public class GameEngine extends GameCore
         if (exit.isPressed()) {
             stop();
         }
-        
+        if (pause.isPressed()){
+            if(isPaused() && !gameOver)
+                unPause();
+            else
+                pause();
+        }
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) 
         {
@@ -236,24 +250,27 @@ public class GameEngine extends GameCore
         // get keyboard/mouse input
         checkInput(elapsedTime);
         
-        // update player
-        updateCreature(player, elapsedTime);
-        player.update(elapsedTime);
-        
-        // update other sprites
-        Iterator i = map.getSprites();
-        while (i.hasNext()) {
-            Sprite sprite = (Sprite)i.next();
-            if (sprite instanceof Creature) {
-                Creature creature = (Creature)sprite;
-                if (creature.getState() == Creature.STATE_DEAD) {
-                    i.remove();
-                } else {
-                    updateCreature(creature, elapsedTime);
+        if(!isPaused())
+        {
+            // update player
+            updateCreature(player, elapsedTime);
+            player.update(elapsedTime);
+            
+            // update other sprites
+            Iterator i = map.getSprites();
+            while (i.hasNext()) {
+                Sprite sprite = (Sprite)i.next();
+                if (sprite instanceof Creature) {
+                    Creature creature = (Creature)sprite;
+                    if (creature.getState() == Creature.STATE_DEAD) {
+                        i.remove();
+                    } else {
+                        updateCreature(creature, elapsedTime);
+                    }
                 }
+                // normal update
+                sprite.update(elapsedTime);
             }
-            // normal update
-            sprite.update(elapsedTime);
         }
     }
     
@@ -354,7 +371,8 @@ public class GameEngine extends GameCore
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
-                    stop();
+                    gameOver = true;
+                    pause();
                 }
             }
         }
