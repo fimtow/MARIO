@@ -37,7 +37,6 @@ public class GameEngine extends GameCore
     private int numLives=6;
    
 
-    private boolean gameOver;
 
     public void init()
     {
@@ -57,8 +56,6 @@ public class GameEngine extends GameCore
         map = mapLoader.loadNextMap();
 
 
-        //init gameover variable
-        gameOver = false;
     }
     
     
@@ -95,9 +92,9 @@ public class GameEngine extends GameCore
             stop();
         }
         if (pause.isPressed()){
-            if(isPaused() && !gameOver)
+            if(isPaused())
                 unPause();
-            else
+            else if(getScene() == -1)
                 pause();
         }
         Player player = (Player)map.getPlayer();
@@ -121,17 +118,26 @@ public class GameEngine extends GameCore
     
     
     public void draw(Graphics2D g) {
-        
-        drawer.draw(g, map, screen.getWidth(), screen.getHeight());
-        g.setColor(Color.WHITE);
-        g.drawString("Press ESC for EXIT.",10.0f,20.0f);
-        g.setColor(Color.GREEN);
-        g.drawString("Coins: "+collectedStars,300.0f,20.0f);
-        g.setColor(Color.YELLOW);
-        g.drawString("Lives: "+(numLives),500.0f,20.0f );
-        g.setColor(Color.WHITE);
-        g.drawString("Home: "+mapLoader.currentMap,700.0f,20.0f);
-        
+        switch (getScene()) {
+            case 0:
+                // is paused
+                break;
+            case 1:
+                // gameover
+                break;
+            // to add a new scene : add a new case in draw() and update with tha same scene number
+            default:
+                drawer.draw(g, map, screen.getWidth(), screen.getHeight());
+                g.setColor(Color.WHITE);
+                g.drawString("Press ESC for EXIT.",10.0f,20.0f);
+                g.setColor(Color.GREEN);
+                g.drawString("Coins: "+collectedStars,300.0f,20.0f);
+                g.setColor(Color.YELLOW);
+                g.drawString("Lives: "+(numLives),500.0f,20.0f );
+                g.setColor(Color.WHITE);
+                g.drawString("Home: "+mapLoader.currentMap,700.0f,20.0f);
+                break;
+        }
     }
     
     
@@ -250,27 +256,35 @@ public class GameEngine extends GameCore
         // get keyboard/mouse input
         checkInput(elapsedTime);
         
-        if(!isPaused())
-        {
-            // update player
-            updateCreature(player, elapsedTime);
-            player.update(elapsedTime);
-            
-            // update other sprites
-            Iterator i = map.getSprites();
-            while (i.hasNext()) {
-                Sprite sprite = (Sprite)i.next();
-                if (sprite instanceof Creature) {
-                    Creature creature = (Creature)sprite;
-                    if (creature.getState() == Creature.STATE_DEAD) {
-                        i.remove();
-                    } else {
-                        updateCreature(creature, elapsedTime);
-                    }
-                }
-                // normal update
-                sprite.update(elapsedTime);
-            }
+        switch (getScene()) {
+            case 0:
+                // is paused
+                break;   
+                
+            case 1:
+                // gameover
+                break;
+            default:
+                        // update player
+                        updateCreature(player, elapsedTime);
+                        player.update(elapsedTime);
+                        
+                        // update other sprites
+                        Iterator i = map.getSprites();
+                        while (i.hasNext()) {
+                            Sprite sprite = (Sprite)i.next();
+                            if (sprite instanceof Creature) {
+                                Creature creature = (Creature)sprite;
+                                if (creature.getState() == Creature.STATE_DEAD) {
+                                    i.remove();
+                                } else {
+                                    updateCreature(creature, elapsedTime);
+                                }
+                            }
+                            // normal update
+                            sprite.update(elapsedTime);
+                        }
+                break;
         }
     }
     
@@ -371,8 +385,7 @@ public class GameEngine extends GameCore
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
-                    gameOver = true;
-                    pause();
+                    setScene(1);
                 }
             }
         }
