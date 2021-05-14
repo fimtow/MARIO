@@ -26,7 +26,15 @@ public abstract class GameCore {
     };
 
     private boolean isRunning;
-    private boolean isPaused;
+    private int scene;
+
+    /* list of all scenes
+
+    -1 : the game itself
+    0 : pause menu
+    1 : gameover
+
+    */
     protected ScreenManager screen;
 
 
@@ -38,17 +46,27 @@ public abstract class GameCore {
     }
 
     public void pause(){
-        isPaused = true;
+        scene = 0;
     }
 
     public void unPause()
     {
-        isPaused = false;
+        scene = -1;
     }
 
     public boolean isPaused()
     {
-        return isPaused;
+        return scene == 0;
+    }
+
+    public int getScene()
+    {
+        return scene;
+    }
+
+    public void setScene(int scene)
+    {
+        this.scene = scene;
     }
     /**
         Calls init() and gameLoop()
@@ -105,7 +123,7 @@ public abstract class GameCore {
         window.setForeground(Color.WHITE);
 
         isRunning = true;
-        isPaused = false;
+        scene = -1;
     }
 
 
