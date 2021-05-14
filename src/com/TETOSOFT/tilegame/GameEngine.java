@@ -17,9 +17,9 @@ public class GameEngine extends GameCore
     
     public static void main(String[] args) 
     {   
-
-        new MenuDrawer().draw();
-        //new GameEngine().run();
+        
+        
+        new GameEngine().run();
     }
     
     public static final float GRAVITY = 0.002f;
@@ -122,8 +122,8 @@ public class GameEngine extends GameCore
     public void draw(Graphics2D g) {
         switch (getScene()) {
             case 0:
-                // is paused
-                //new MenuDrawer().draw(g,100,100);
+                
+                new MenuDrawer().draw(g);
                 
                 break;
             case 1:
