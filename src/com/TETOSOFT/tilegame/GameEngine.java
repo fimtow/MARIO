@@ -123,7 +123,7 @@ public class GameEngine extends GameCore
         switch (getScene()) {
             case 0:
                 
-                new MenuDrawer().draw(g);
+                new MenuDrawer().draw(g,screen.getWidth(),screen.getHeight());
                 
                 break;
             case 1:
