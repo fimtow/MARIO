@@ -61,7 +61,8 @@ public abstract class GameCore {
 
     public int getScene()
     {
-        return scene;
+        //return scene;
+        return 0;
     }
 
     public void setScene(int scene)

@@ -16,8 +16,10 @@ public class GameEngine extends GameCore
 {
     
     public static void main(String[] args) 
-    {
-        new GameEngine().run();
+    {   
+
+        new MenuDrawer().draw();
+        //new GameEngine().run();
     }
     
     public static final float GRAVITY = 0.002f;
@@ -121,6 +123,8 @@ public class GameEngine extends GameCore
         switch (getScene()) {
             case 0:
                 // is paused
+                //new MenuDrawer().draw(g,100,100);
+                
                 break;
             case 1:
                 // gameover
@@ -258,7 +262,7 @@ public class GameEngine extends GameCore
         
         switch (getScene()) {
             case 0:
-                // is paused
+             
                 break;   
                 
             case 1:
