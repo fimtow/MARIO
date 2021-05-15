@@ -2,12 +2,15 @@ package com.TETOSOFT.tilegame;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import javax.swing.JFrame;
 import java.util.Iterator;
 
 import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
 import com.TETOSOFT.test.GameCore;
 import com.TETOSOFT.tilegame.sprites.*;
+
 
 /**
  * GameManager manages all parts of the game.
@@ -17,7 +20,6 @@ public class GameEngine extends GameCore
     
     public static void main(String[] args) 
     {   
-        
         
         new GameEngine().run();
     }
@@ -35,6 +37,7 @@ public class GameEngine extends GameCore
     private GameAction jump;
     private GameAction exit;
     private GameAction pause;
+    private GameAction mouseClicked;
     private int collectedStars=0;
     private int numLives=6;
    
@@ -57,6 +60,12 @@ public class GameEngine extends GameCore
         // load first map
         map = mapLoader.loadNextMap();
 
+        // JFrame frame = new ScreenManager().getFullScreenWindow();
+        // MouseInput m = new MouseInput(screen.getWidth(),screen.getHeight(),this);
+        // frame.addMouseListener(m);
+
+        
+
 
     }
     
@@ -76,14 +85,17 @@ public class GameEngine extends GameCore
         jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
         exit = new GameAction("exit",GameAction.DETECT_INITAL_PRESS_ONLY);
         pause = new GameAction("pause",GameAction.DETECT_INITAL_PRESS_ONLY);
+        mouseClicked = new GameAction("mouseClicked",GameAction.DETECT_INITAL_PRESS_ONLY);
         inputManager = new InputManager(screen.getFullScreenWindow());
-        inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
+        //inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
         
         inputManager.mapToKey(moveLeft, KeyEvent.VK_LEFT);
         inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
         inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
         inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
         inputManager.mapToKey(pause, KeyEvent.VK_P);
+        inputManager.mapToMouse(mouseClicked, MouseEvent.BUTTON3);
+        
     }
     
     
@@ -98,6 +110,10 @@ public class GameEngine extends GameCore
                 unPause();
             else if(getScene() == -1)
                 pause();
+        }
+        if(mouseClicked.isPressed())
+        {
+            menuAction();
         }
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) 
@@ -122,14 +138,16 @@ public class GameEngine extends GameCore
     public void draw(Graphics2D g) {
         switch (getScene()) {
             case 0:
-                
-                new MenuDrawer().draw(g,screen.getWidth(),screen.getHeight());
-                
+                // Pause
                 break;
+            
             case 1:
                 // gameover
                 break;
             // to add a new scene : add a new case in draw() and update with tha same scene number
+            case 2:
+                new MenuDrawer().draw(g,screen.getWidth(),screen.getHeight());
+                break;
             default:
                 drawer.draw(g, map, screen.getWidth(), screen.getHeight());
                 g.setColor(Color.WHITE);
@@ -267,6 +285,9 @@ public class GameEngine extends GameCore
                 
             case 1:
                 // gameover
+                break;
+            case 2:
+                
                 break;
             default:
                         // update player
@@ -421,6 +442,41 @@ public class GameEngine extends GameCore
       
             map = mapLoader.loadNextMap();
             
+        }
+    }
+    public void menuAction()
+    {   
+        int mx = inputManager.getMouseX();
+        int my =  inputManager.getMouseY();
+        int screenWidth = screen.getWidth();
+        int screenHeight = screen.getHeight();
+        /*
+        playButton = new Rectangle(screenWidth / 2 - 90 ,200,200,50);
+        helpButton = new Rectangle(screenWidth / 2 - 90 ,300,200,50);
+        changeButton = new Rectangle(screenWidth / 2 - 90 ,400,200,50);
+        exitButton = new Rectangle(screenWidth / 2 - 90 ,500,200,50);
+        */
+        if(mx >= screenWidth / 2 - 90 && mx <= screenWidth / 2 +110)
+        {
+            if(my >= 200 && my <= 250 )
+            {
+                setScene(-1);
+                
+            }
+            if(my >= 300 && my <= 350)
+            { 
+                //help pressed
+            }
+            if(my >= 400 && my <= 450)
+            { 
+                //Change pressed
+            }
+            if(my >= 500 && my <= 550)
+            {
+                //Exit pressed
+                stop();
+            }
+
         }
     }
     
