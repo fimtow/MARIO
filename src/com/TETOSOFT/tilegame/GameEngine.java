@@ -29,7 +29,7 @@ public class GameEngine extends GameCore
     private Point pointCache = new Point();
     private TileMap map;
     private MapLoader mapLoader;
-    private InputManager inputManager;
+    private InputManager inputManager,inputManager1;
     private TileMapDrawer drawer;
     
     private GameAction moveLeft;
@@ -112,8 +112,9 @@ public class GameEngine extends GameCore
                 pause();
         }
         if(mouseClicked.isPressed())
-        {
-            menuAction();
+        {   
+        	if(getScene()==2) menuAction(); //if it's displaying the menu
+        	else if (getScene()==3) docAction(); //if it's displaying the documentation 
         }
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) 
@@ -137,8 +138,8 @@ public class GameEngine extends GameCore
     
     public void draw(Graphics2D g) {
         switch (getScene()) {
-            case 0:
-                // Pause
+            case 3:
+            	new DocDrawer().draw(g,screen.getWidth(),screen.getHeight());
                 break;
             
             case 1:
@@ -146,6 +147,9 @@ public class GameEngine extends GameCore
                 break;
             // to add a new scene : add a new case in draw() and update with tha same scene number
             case 2:
+            	//to clear the screen
+            	g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
+            	//to draw the documentation
                 new MenuDrawer().draw(g,screen.getWidth(),screen.getHeight());
                 break;
             default:
@@ -465,7 +469,9 @@ public class GameEngine extends GameCore
             }
             if(my >= 300 && my <= 350)
             { 
-                //help pressed
+            	//help pressed
+                setScene(3);
+                
             }
             if(my >= 400 && my <= 450)
             { 
@@ -478,7 +484,35 @@ public class GameEngine extends GameCore
             }
 
         }
+        
+        
     }
+ public void docAction() {
+         int mx1 = inputManager.getMouseX();
+         int my1 =  inputManager.getMouseY();
+         int screenWidth1 = screen.getWidth();     
+     if(mx1 >= screenWidth1 / 2 - 90 && mx1 <= screenWidth1 / 2 +110)
+     {
+     	
+         if(my1 >= 350 && my1 <= 400 )
+         {
+             setScene(-1);
+             
+         }
+         if(my1 >= 420 && my1 <= 470)
+         { 
+        	 setScene(2);
+         }
+
+         if(my1 >= 490 && my1 <= 540)
+         {
+             //Exit pressed
+             stop();
+         }
+
+     }
+ 
+ }
     
       
 }
