@@ -3,9 +3,7 @@ package com.TETOSOFT.tilegame;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import javax.swing.JFrame;
 import java.util.Iterator;
-
 import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
 import com.TETOSOFT.test.GameCore;
@@ -19,19 +17,17 @@ public class GameEngine extends GameCore
 {
     
     public static void main(String[] args) 
-    {   
-        
+    {    
         new GameEngine().run();
     }
     
-    public static final float GRAVITY = 0.002f;
     
+    public static final float GRAVITY = 0.002f;
     private Point pointCache = new Point();
     private TileMap map;
     private MapLoader mapLoader;
     private InputManager inputManager;
     private TileMapDrawer drawer;
-    
     private GameAction moveLeft;
     private GameAction moveRight;
     private GameAction jump;
@@ -47,7 +43,7 @@ public class GameEngine extends GameCore
     {
         super.init();
         
-        // set up input manager
+        //set up input manager
         initInput();
         
         // start resource manager
@@ -140,9 +136,10 @@ public class GameEngine extends GameCore
             case 0:
                 // Pause
                 break;
-            
             case 1:
-                // gameover
+            	 g.setColor(Color.black);
+                 g.fillRect(0, 0, screen.getWidth(), screen.getHeight());
+                 new GameOver().draw(g,screen.getWidth(),screen.getHeight());
                 break;
             // to add a new scene : add a new case in draw() and update with tha same scene number
             case 2:
@@ -284,7 +281,7 @@ public class GameEngine extends GameCore
                 break;   
                 
             case 1:
-                // gameover
+            	
                 break;
             case 2:
                 
@@ -405,11 +402,6 @@ public class GameEngine extends GameCore
                 player.setState(Creature.STATE_DYING);
                 numLives--;
                 if(numLives==0) {
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
                     setScene(1);
                 }
             }
@@ -460,13 +452,23 @@ public class GameEngine extends GameCore
         {
             if(my >= 200 && my <= 250 )
             {
-                setScene(-1);
-                
+            	if(getScene()==1) {
+            		 stop();
+            	}else {
+                     setScene(-1);
+            	} 
             }
+            
             if(my >= 300 && my <= 350)
             { 
+            	if(numLives==0) {
+                    new GameEngine().run();
+            	}else {
+                   
+            	} 
                 //help pressed
             }
+            
             if(my >= 400 && my <= 450)
             { 
                 //Change pressed
