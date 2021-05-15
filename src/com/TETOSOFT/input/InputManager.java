@@ -288,7 +288,8 @@ public class InputManager implements KeyListener, MouseListener,
 
     // from the MouseListener interface
     public void mouseClicked(MouseEvent e) {
-        // do nothing
+        
+        
     }
 
 
