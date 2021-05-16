@@ -34,6 +34,7 @@ public abstract class GameCore {
     0 : pause menu
     1 : gameover
     2 : menu
+    3 : documentation
 
     */
     protected ScreenManager screen;
