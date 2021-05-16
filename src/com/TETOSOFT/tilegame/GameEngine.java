@@ -29,7 +29,7 @@ public class GameEngine extends GameCore
     private Point pointCache = new Point();
     private TileMap map;
     private MapLoader mapLoader;
-    private InputManager inputManager,inputManager1;
+    private InputManager inputManager;
     private TileMapDrawer drawer;
     
     private GameAction moveLeft;
@@ -453,7 +453,6 @@ public class GameEngine extends GameCore
         int mx = inputManager.getMouseX();
         int my =  inputManager.getMouseY();
         int screenWidth = screen.getWidth();
-        int screenHeight = screen.getHeight();
         /*
         playButton = new Rectangle(screenWidth / 2 - 90 ,200,200,50);
         helpButton = new Rectangle(screenWidth / 2 - 90 ,300,200,50);
