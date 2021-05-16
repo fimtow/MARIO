@@ -33,7 +33,6 @@ public abstract class GameCore {
     -1 : the game itself
     0 : pause menu
     1 : gameover
-    2 : menu
 
     */
     protected ScreenManager screen;
@@ -52,7 +51,7 @@ public abstract class GameCore {
 
     public void unPause()
     {
-        scene = 0;
+        scene = -1;
     }
 
     public boolean isPaused()
@@ -63,7 +62,6 @@ public abstract class GameCore {
     public int getScene()
     {
         return scene;
-        
     }
 
     public void setScene(int scene)
@@ -125,7 +123,7 @@ public abstract class GameCore {
         window.setForeground(Color.WHITE);
 
         isRunning = true;
-        scene = 2;
+        scene = -1;
     }
 
 

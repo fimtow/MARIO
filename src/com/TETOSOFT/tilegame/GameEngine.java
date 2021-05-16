@@ -2,15 +2,17 @@ package com.TETOSOFT.tilegame;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import javax.swing.JFrame;
 import java.util.Iterator;
+
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
 import com.TETOSOFT.test.GameCore;
 import com.TETOSOFT.tilegame.sprites.*;
-
 
 /**
  * GameManager manages all parts of the game.
@@ -19,8 +21,7 @@ public class GameEngine extends GameCore
 {
     
     public static void main(String[] args) 
-    {   
-        
+    {
         new GameEngine().run();
     }
     
@@ -32,16 +33,16 @@ public class GameEngine extends GameCore
     private InputManager inputManager;
     private TileMapDrawer drawer;
     
+    private GameAction restart;
     private GameAction moveLeft;
     private GameAction moveRight;
     private GameAction jump;
     private GameAction exit;
     private GameAction pause;
-    private GameAction mouseClicked;
     private int collectedStars=0;
     private int numLives=6;
-   
-
+    private int numPauses = 0;
+    private boolean isPausedPressed = false;
 
     public void init()
     {
@@ -60,12 +61,6 @@ public class GameEngine extends GameCore
         // load first map
         map = mapLoader.loadNextMap();
 
-        // JFrame frame = new ScreenManager().getFullScreenWindow();
-        // MouseInput m = new MouseInput(screen.getWidth(),screen.getHeight(),this);
-        // frame.addMouseListener(m);
-
-        
-
 
     }
     
@@ -78,24 +73,29 @@ public class GameEngine extends GameCore
         
     }
     
+    public void pause() {
+        super.pause();
+        isPausedPressed = true;
+        
+    }
     
     private void initInput() {
+        restart = new GameAction("restart");
         moveLeft = new GameAction("moveLeft");
         moveRight = new GameAction("moveRight");
         jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
         exit = new GameAction("exit",GameAction.DETECT_INITAL_PRESS_ONLY);
         pause = new GameAction("pause",GameAction.DETECT_INITAL_PRESS_ONLY);
-        mouseClicked = new GameAction("mouseClicked",GameAction.DETECT_INITAL_PRESS_ONLY);
         inputManager = new InputManager(screen.getFullScreenWindow());
-        //inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
+        inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
         
         inputManager.mapToKey(moveLeft, KeyEvent.VK_LEFT);
         inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
         inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
         inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
         inputManager.mapToKey(pause, KeyEvent.VK_P);
-        inputManager.mapToMouse(mouseClicked, MouseEvent.BUTTON3);
-        
+        inputManager.mapToKey(restart, KeyEvent.VK_R);
+
     }
     
     
@@ -105,15 +105,19 @@ public class GameEngine extends GameCore
         if (exit.isPressed()) {
             stop();
         }
+        
+        if(restart.isPressed()) {
+        	setScene(-1);
+        	numLives = 6;
+        	map = mapLoader.reloadMap();
+        } 
+        
         if (pause.isPressed()){
+        	numPauses++;
             if(isPaused())
                 unPause();
             else if(getScene() == -1)
                 pause();
-        }
-        if(mouseClicked.isPressed())
-        {
-            menuAction();
         }
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) 
@@ -138,16 +142,45 @@ public class GameEngine extends GameCore
     public void draw(Graphics2D g) {
         switch (getScene()) {
             case 0:
-                // Pause
+                // is paused
+            	if (isPausedPressed && numPauses == 1) {
+            		System.out.println("dialog");
+    	        	try {
+    					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    				} catch (ClassNotFoundException e) {
+    					e.printStackTrace();
+    				} catch (InstantiationException e) {
+    					e.printStackTrace();
+    				} catch (IllegalAccessException e) {
+    					e.printStackTrace();
+    				} catch (UnsupportedLookAndFeelException e) {
+    					e.printStackTrace();
+    				}
+    	    
+    		        ImageIcon icon = new ImageIcon("images/smurf.png");
+    		        Image image = icon.getImage();
+    	
+    		        Image newimg = image.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
+    		        icon = new ImageIcon(newimg); 
+    		        JOptionPane.showInternalMessageDialog(
+    		                 screen.getFullScreenWindow().getContentPane(),
+    		                 "Press P again to unpause and R to restart.\nPress Enter to dismiss the dialog.",
+    		                 "Pause Instructions",
+    		                 JOptionPane.INFORMATION_MESSAGE,
+    		                 icon);
+    	
+    			}
+            	//setScene(7); 
+            	//Cannot change the scene because isPaused() tests on value 0
+            	isPausedPressed = false;
                 break;
-            
+            case 7:
+                // gameover
+                break;
             case 1:
                 // gameover
                 break;
             // to add a new scene : add a new case in draw() and update with tha same scene number
-            case 2:
-                new MenuDrawer().draw(g,screen.getWidth(),screen.getHeight());
-                break;
             default:
                 drawer.draw(g, map, screen.getWidth(), screen.getHeight());
                 g.setColor(Color.WHITE);
@@ -280,14 +313,11 @@ public class GameEngine extends GameCore
         
         switch (getScene()) {
             case 0:
-             
+                // is paused
                 break;   
                 
             case 1:
                 // gameover
-                break;
-            case 2:
-                
                 break;
             default:
                         // update player
@@ -442,41 +472,6 @@ public class GameEngine extends GameCore
       
             map = mapLoader.loadNextMap();
             
-        }
-    }
-    public void menuAction()
-    {   
-        int mx = inputManager.getMouseX();
-        int my =  inputManager.getMouseY();
-        int screenWidth = screen.getWidth();
-        int screenHeight = screen.getHeight();
-        /*
-        playButton = new Rectangle(screenWidth / 2 - 90 ,200,200,50);
-        helpButton = new Rectangle(screenWidth / 2 - 90 ,300,200,50);
-        changeButton = new Rectangle(screenWidth / 2 - 90 ,400,200,50);
-        exitButton = new Rectangle(screenWidth / 2 - 90 ,500,200,50);
-        */
-        if(mx >= screenWidth / 2 - 90 && mx <= screenWidth / 2 +110)
-        {
-            if(my >= 200 && my <= 250 )
-            {
-                setScene(-1);
-                
-            }
-            if(my >= 300 && my <= 350)
-            { 
-                //help pressed
-            }
-            if(my >= 400 && my <= 450)
-            { 
-                //Change pressed
-            }
-            if(my >= 500 && my <= 550)
-            {
-                //Exit pressed
-                stop();
-            }
-
         }
     }
     
