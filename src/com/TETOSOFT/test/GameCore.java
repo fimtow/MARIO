@@ -52,7 +52,7 @@ public abstract class GameCore {
 
     public void unPause()
     {
-        scene = 0;
+        scene = -1;
     }
 
     public boolean isPaused()
