@@ -467,10 +467,9 @@ public class GameEngine extends GameCore
             	if(numLives==0) {
                     new GameEngine().run();
             	}else {
-                   
+                   //help pressed
+                    setScene(3);
             	} 
-            	//help pressed
-                setScene(3);
             }
             
             if(my >= 400 && my <= 450)
