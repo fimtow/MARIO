@@ -110,6 +110,7 @@ public class GameEngine extends GameCore
         if(mouseClicked.isPressed())
         {   
         	if(getScene()==2) menuAction(); //if it's displaying the menu
+        	else if(getScene()==1)GameOverAction();
         	else if (getScene()==3) docAction(); //if it's displaying the documentation 
         }
         Player player = (Player)map.getPlayer();
@@ -138,8 +139,9 @@ public class GameEngine extends GameCore
             	new DocDrawer().draw(g,screen.getWidth(),screen.getHeight());
                 break;
             case 1:
-            	 g.setColor(Color.black);
-                 g.fillRect(0, 0, screen.getWidth(), screen.getHeight());
+            	//to clear the screen
+                 g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
+                //GameOver
                  new GameOver().draw(g,screen.getWidth(),screen.getHeight());
                 break;
             // to add a new scene : add a new case in draw() and update with tha same scene number
@@ -455,21 +457,13 @@ public class GameEngine extends GameCore
         {
             if(my >= 200 && my <= 250 )
             {
-            	if(getScene()==1) {
-            		 stop();
-            	}else {
                      setScene(-1);
-            	} 
             }
             
             if(my >= 300 && my <= 350)
             { 
-            	if(numLives==0) {
-                    new GameEngine().run();
-            	}else {
                    //help pressed
-                    setScene(3);
-            	} 
+                    setScene(3); 
             }
             
             if(my >= 400 && my <= 450)
@@ -511,6 +505,30 @@ public class GameEngine extends GameCore
 
      }
  
+ }
+ 
+ 
+ 
+ public void GameOverAction()
+ {   
+     int mx2 = inputManager.getMouseX();
+     int my2 =  inputManager.getMouseY();
+     int screenWidth2 = screen.getWidth();
+    
+     if(mx2 >= screenWidth2 / 2 - 90 && mx2 <= screenWidth2 / 2 +110)
+     {
+         if(my2 >= 200 && my2 <= 250 )
+         {
+         		 stop();
+         }
+         
+         if(my2 >= 300 && my2 <= 350)
+         { 
+         	
+                 new GameEngine().run();
+         }
+     }
+     
  }
     
       
