@@ -1,17 +1,35 @@
 package com.TETOSOFT.tilegame;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import java.util.Iterator;
+
+
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
 import com.TETOSOFT.test.Background;
 import com.TETOSOFT.test.GameCore;
 import com.TETOSOFT.tilegame.sprites.*;
 
+
+import com.TETOSOFT.graphics.Sprite;
+import com.TETOSOFT.input.GameAction;
+import com.TETOSOFT.input.InputManager;
+import com.TETOSOFT.test.GameCore;
+import com.TETOSOFT.tilegame.sprites.Creature;
+import com.TETOSOFT.tilegame.sprites.Player;
+import com.TETOSOFT.tilegame.sprites.PowerUp;
 
 /**
  * GameManager manages all parts of the game.
@@ -20,7 +38,8 @@ public class GameEngine extends GameCore
 {
     
     public static void main(String[] args) 
-    {    
+
+    {
         new GameEngine().run();
     }
     
@@ -31,6 +50,11 @@ public class GameEngine extends GameCore
     private MapLoader mapLoader;
     private InputManager inputManager;
     private TileMapDrawer drawer;
+
+    
+    private GameAction restart;
+
+
     private GameAction moveLeft;
     private GameAction moveRight;
     private GameAction jump;
@@ -45,8 +69,9 @@ public class GameEngine extends GameCore
     private GameAction back4;
     private int collectedStars=0;
     private int numLives=6;
+    private int numPauses = 0;
+    private boolean isPausedPressed = false;
     private String background="background.jpg";
-
 
     public void init()
     {
@@ -65,12 +90,6 @@ public class GameEngine extends GameCore
         // load first map
         map = mapLoader.loadNextMap();
 
-        // JFrame frame = new ScreenManager().getFullScreenWindow();
-        // MouseInput m = new MouseInput(screen.getWidth(),screen.getHeight(),this);
-        // frame.addMouseListener(m);
-
-        
-
 
     }
     
@@ -83,8 +102,14 @@ public class GameEngine extends GameCore
         
     }
     
+    public void pause() {
+        super.pause();
+        isPausedPressed = true;
+        
+    }
     
     private void initInput() {
+        restart = new GameAction("restart");
         moveLeft = new GameAction("moveLeft");
         moveRight = new GameAction("moveRight");
         jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
@@ -112,7 +137,8 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
         inputManager.mapToKey(back3, KeyEvent.VK_NUMPAD3);
         inputManager.mapToKey(back4, KeyEvent.VK_NUMPAD4);
         inputManager.mapToMouse(mouseClicked, MouseEvent.BUTTON3);
-        
+        inputManager.mapToKey(restart, KeyEvent.VK_R);
+
     }
     
     
@@ -122,12 +148,21 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
         if (exit.isPressed()) {
             stop();
         }
+        
+        if(restart.isPressed()) {
+        	setScene(-1);
+        	numLives = 6;
+        	map = mapLoader.reloadMap();
+        } 
+        
         if (pause.isPressed()){
+        	numPauses++;
             if(isPaused())
                 unPause();
             else if(getScene() == -1)
                 pause();
         }
+        
         if (start.isPressed()){
             if(isPaused())
             	unPause();
@@ -197,12 +232,14 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
 			background="background4.jpg";
 			 drawer.setBackground(mapLoader.loadImage(background));
 			 map = mapLoader.loadNextMap();}
+       
         if(mouseClicked.isPressed())
         {   
         	if(getScene()==2) menuAction(); //if it's displaying the menu
         	else if(getScene()==1)GameOverAction();
         	else if (getScene()==3) docAction(); //if it's displaying the documentation 
         }
+
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) 
         {
@@ -225,8 +262,45 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
     
     public void draw(Graphics2D g) {
         switch (getScene()) {
+
+            case 0:
+                // is paused
+            	if (isPausedPressed && numPauses == 1) {
+            		System.out.println("dialog");
+    	        	try {
+    					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    				} catch (ClassNotFoundException e) {
+    					e.printStackTrace();
+    				} catch (InstantiationException e) {
+    					e.printStackTrace();
+    				} catch (IllegalAccessException e) {
+    					e.printStackTrace();
+    				} catch (UnsupportedLookAndFeelException e) {
+    					e.printStackTrace();
+    				}
+    	    
+    		        ImageIcon icon = new ImageIcon("images/smurf.png");
+    		        Image image = icon.getImage();
+    	
+    		        Image newimg = image.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
+    		        icon = new ImageIcon(newimg); 
+    		        JOptionPane.showInternalMessageDialog(
+    		                 screen.getFullScreenWindow().getContentPane(),
+    		                 "Press P again to unpause and R to restart.\nPress Enter to dismiss the dialog.",
+    		                 "Pause Instructions",
+    		                 JOptionPane.INFORMATION_MESSAGE,
+    		                 icon);
+    	
+    			}
+            	//setScene(7); 
+            	//Cannot change the scene because isPaused() tests on value 0
+            	isPausedPressed = false;
+                break;
+
+
             case 3:
             	new DocDrawer().draw(g,screen.getWidth(),screen.getHeight());
+
                 break;
             case 1:
             	//to clear the screen
@@ -235,12 +309,15 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
                  new GameOver().draw(g,screen.getWidth(),screen.getHeight());
                 break;
             // to add a new scene : add a new case in draw() and update with tha same scene number
+
+
             case 2:
             	//to clear the screen
             	g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
             	//to draw the documentation
                 new MenuDrawer().draw(g,screen.getWidth(),screen.getHeight());
                 break;
+
             default:
                 drawer.draw(g, map, screen.getWidth(), screen.getHeight());
                 g.setColor(Color.WHITE);
@@ -373,14 +450,11 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
         
         switch (getScene()) {
             case 0:
-             
+                // is paused
                 break;   
                 
             case 1:
             	
-                break;
-            case 2:
-                
                 break;
             default:
                         // update player
@@ -532,6 +606,8 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
             
         }
     }
+
+
     public void menuAction()
     {   
         int mx = inputManager.getMouseX();
@@ -596,7 +672,8 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
      }
  
  }
- 
+
+
  
  
  public void GameOverAction()
@@ -620,6 +697,7 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
      }
      
  }
+
     
       
 }
