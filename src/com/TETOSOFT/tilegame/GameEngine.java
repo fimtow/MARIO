@@ -5,9 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-
 import java.util.Iterator;
-
 import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
 import com.TETOSOFT.test.Background;
@@ -22,19 +20,17 @@ public class GameEngine extends GameCore
 {
     
     public static void main(String[] args) 
-    {   
-        
+    {    
         new GameEngine().run();
     }
     
-    public static final float GRAVITY = 0.002f;
     
+    public static final float GRAVITY = 0.002f;
     private Point pointCache = new Point();
     private TileMap map;
     private MapLoader mapLoader;
     private InputManager inputManager;
     private TileMapDrawer drawer;
-    
     private GameAction moveLeft;
     private GameAction moveRight;
     private GameAction jump;
@@ -56,7 +52,7 @@ public class GameEngine extends GameCore
     {
         super.init();
         
-        // set up input manager
+        //set up input manager
         initInput();
         
         // start resource manager
@@ -202,8 +198,10 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
 			 drawer.setBackground(mapLoader.loadImage(background));
 			 map = mapLoader.loadNextMap();}
         if(mouseClicked.isPressed())
-        {
-            menuAction();
+        {   
+        	if(getScene()==2) menuAction(); //if it's displaying the menu
+        	else if(getScene()==1)GameOverAction();
+        	else if (getScene()==3) docAction(); //if it's displaying the documentation 
         }
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) 
@@ -227,15 +225,20 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
     
     public void draw(Graphics2D g) {
         switch (getScene()) {
-            case 0:
-                // Pause
+            case 3:
+            	new DocDrawer().draw(g,screen.getWidth(),screen.getHeight());
                 break;
-            
             case 1:
-                // gameover
+            	//to clear the screen
+                 g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
+                //GameOver
+                 new GameOver().draw(g,screen.getWidth(),screen.getHeight());
                 break;
             // to add a new scene : add a new case in draw() and update with tha same scene number
             case 2:
+            	//to clear the screen
+            	g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
+            	//to draw the documentation
                 new MenuDrawer().draw(g,screen.getWidth(),screen.getHeight());
                 break;
             default:
@@ -374,7 +377,7 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
                 break;   
                 
             case 1:
-                // gameover
+            	
                 break;
             case 2:
                 
@@ -495,11 +498,6 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
                 player.setState(Creature.STATE_DYING);
                 numLives--;
                 if(numLives==0) {
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
                     setScene(1);
                 }
             }
@@ -539,7 +537,6 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
         int mx = inputManager.getMouseX();
         int my =  inputManager.getMouseY();
         int screenWidth = screen.getWidth();
-        int screenHeight = screen.getHeight();
         /*
         playButton = new Rectangle(screenWidth / 2 - 90 ,200,200,50);
         helpButton = new Rectangle(screenWidth / 2 - 90 ,300,200,50);
@@ -550,13 +547,15 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
         {
             if(my >= 200 && my <= 250 )
             {
-                setScene(-1);
-                
+                     setScene(-1);
             }
+            
             if(my >= 300 && my <= 350)
             { 
-                //help pressed
+                   //help pressed
+                    setScene(3); 
             }
+            
             if(my >= 400 && my <= 450)
             { 
                 //Change pressed
@@ -568,7 +567,59 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
             }
 
         }
+        
+        
     }
+ public void docAction() {
+         int mx1 = inputManager.getMouseX();
+         int my1 =  inputManager.getMouseY();
+         int screenWidth1 = screen.getWidth();     
+     if(mx1 >= screenWidth1 / 2 - 90 && mx1 <= screenWidth1 / 2 +110)
+     {
+     	
+         if(my1 >= 350 && my1 <= 400 )
+         {
+             setScene(-1);
+             
+         }
+         if(my1 >= 420 && my1 <= 470)
+         { 
+        	 setScene(2);
+         }
+
+         if(my1 >= 490 && my1 <= 540)
+         {
+             //Exit pressed
+             stop();
+         }
+
+     }
+ 
+ }
+ 
+ 
+ 
+ public void GameOverAction()
+ {   
+     int mx2 = inputManager.getMouseX();
+     int my2 =  inputManager.getMouseY();
+     int screenWidth2 = screen.getWidth();
+    
+     if(mx2 >= screenWidth2 / 2 - 90 && mx2 <= screenWidth2 / 2 +110)
+     {
+         if(my2 >= 200 && my2 <= 250 )
+         {
+         		 stop();
+         }
+         
+         if(my2 >= 300 && my2 <= 350)
+         { 
+         	
+                 new GameEngine().run();
+         }
+     }
+     
+ }
     
       
 }
