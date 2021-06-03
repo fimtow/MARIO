@@ -3,9 +3,12 @@ package com.TETOSOFT.tilegame;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
 import java.util.Iterator;
 import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
+import com.TETOSOFT.test.Background;
 import com.TETOSOFT.test.GameCore;
 import com.TETOSOFT.tilegame.sprites.*;
 
@@ -33,10 +36,16 @@ public class GameEngine extends GameCore
     private GameAction jump;
     private GameAction exit;
     private GameAction pause;
+    private GameAction start;
+    private GameAction change_backg;
     private GameAction mouseClicked;
+    private GameAction back1;
+    private GameAction back2;
+    private GameAction back3;
+    private GameAction back4;
     private int collectedStars=0;
     private int numLives=6;
-   
+    private String background="background.jpg";
 
 
     public void init()
@@ -51,7 +60,7 @@ public class GameEngine extends GameCore
         
         // load resources
         drawer = new TileMapDrawer();
-        drawer.setBackground(mapLoader.loadImage("background.jpg"));
+        drawer.setBackground(mapLoader.loadImage(background));
         
         // load first map
         map = mapLoader.loadNextMap();
@@ -81,6 +90,12 @@ public class GameEngine extends GameCore
         jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
         exit = new GameAction("exit",GameAction.DETECT_INITAL_PRESS_ONLY);
         pause = new GameAction("pause",GameAction.DETECT_INITAL_PRESS_ONLY);
+        start = new GameAction("start",GameAction.DETECT_INITAL_PRESS_ONLY);
+change_backg =new GameAction("change background",GameAction.DETECT_INITAL_PRESS_ONLY);
+back1 =new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
+back2 =new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
+back3 =new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
+back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
         mouseClicked = new GameAction("mouseClicked",GameAction.DETECT_INITAL_PRESS_ONLY);
         inputManager = new InputManager(screen.getFullScreenWindow());
         //inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
@@ -90,6 +105,12 @@ public class GameEngine extends GameCore
         inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
         inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
         inputManager.mapToKey(pause, KeyEvent.VK_P);
+        inputManager.mapToKey(start, KeyEvent.VK_S);
+        inputManager.mapToKey(change_backg, KeyEvent.VK_C);
+        inputManager.mapToKey(back1, KeyEvent.VK_NUMPAD1);
+        inputManager.mapToKey(back2, KeyEvent.VK_NUMPAD2);
+        inputManager.mapToKey(back3, KeyEvent.VK_NUMPAD3);
+        inputManager.mapToKey(back4, KeyEvent.VK_NUMPAD4);
         inputManager.mapToMouse(mouseClicked, MouseEvent.BUTTON3);
         
     }
@@ -107,6 +128,75 @@ public class GameEngine extends GameCore
             else if(getScene() == -1)
                 pause();
         }
+        if (start.isPressed()){
+            if(isPaused())
+            	unPause();
+            
+        }
+        if (change_backg.isPressed()){
+        	 JFrame f = new JFrame("les background");
+			
+			    f.getContentPane().add(new Background());
+			    f.setSize(1024,758);
+			    f.setVisible(true);
+			    if(back1.isPressed())
+				{background="background1.jpg";
+				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+				drawer = new TileMapDrawer();
+				drawer.setBackground(mapLoader.loadImage("background1.jpg"));
+				 map = mapLoader.loadNextMap();}
+			    if(back2.isPressed())
+				{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+				drawer = new TileMapDrawer();
+				background="background2.jpg";
+				 map = mapLoader.loadNextMap();}
+				
+			if(back3.isPressed())
+				{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+				drawer = new TileMapDrawer();
+				background="background3.jpg";
+				 drawer.setBackground(mapLoader.loadImage(background));
+				}
+			if(back4.isPressed())
+				{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+				drawer = new TileMapDrawer();
+				background="background4.jpg";
+				 drawer.setBackground(mapLoader.loadImage(background));
+				 map = mapLoader.loadNextMap();}
+			
+			  
+          
+        }
+        if(back1.isPressed())
+		{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+		background="background1.jpg";
+		drawer = new TileMapDrawer();
+		drawer.setBackground(mapLoader.loadImage("background1.jpg"));}
+        if(back2.isPressed())
+			{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+			drawer = new TileMapDrawer();
+			background="background2.jpg";
+			 map = mapLoader.loadNextMap();}
+			
+		if(back3.isPressed())
+			{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+			drawer = new TileMapDrawer();
+			background="background3.jpg";
+			 drawer.setBackground(mapLoader.loadImage(background));
+			 map = mapLoader.loadNextMap();}
+		if(back4.isPressed())
+			{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+			drawer = new TileMapDrawer();
+			background="background4.jpg";
+			 drawer.setBackground(mapLoader.loadImage(background));
+			 map = mapLoader.loadNextMap();}
         if(mouseClicked.isPressed())
         {   
         	if(getScene()==2) menuAction(); //if it's displaying the menu
