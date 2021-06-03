@@ -8,10 +8,17 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
 
+
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import com.TETOSOFT.graphics.*;
+import com.TETOSOFT.input.*;
+import com.TETOSOFT.test.GameCore;
+import com.TETOSOFT.tilegame.sprites.*;
+
 
 import com.TETOSOFT.graphics.Sprite;
 import com.TETOSOFT.input.GameAction;
@@ -28,19 +35,23 @@ public class GameEngine extends GameCore
 {
     
     public static void main(String[] args) 
+
     {
         new GameEngine().run();
     }
     
-    public static final float GRAVITY = 0.002f;
     
+    public static final float GRAVITY = 0.002f;
     private Point pointCache = new Point();
     private TileMap map;
     private MapLoader mapLoader;
     private InputManager inputManager;
     private TileMapDrawer drawer;
+
     
     private GameAction restart;
+
+
     private GameAction moveLeft;
     private GameAction moveRight;
     private GameAction jump;
@@ -56,7 +67,7 @@ public class GameEngine extends GameCore
     {
         super.init();
         
-        // set up input manager
+        //set up input manager
         initInput();
         
         // start resource manager
@@ -134,6 +145,7 @@ public class GameEngine extends GameCore
         if(mouseClicked.isPressed())
         {   
         	if(getScene()==2) menuAction(); //if it's displaying the menu
+        	else if(getScene()==1)GameOverAction();
         	else if (getScene()==3) docAction(); //if it's displaying the documentation 
         }
 
@@ -200,7 +212,10 @@ public class GameEngine extends GameCore
 
                 break;
             case 1:
-                // gameover
+            	//to clear the screen
+                 g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
+                //GameOver
+                 new GameOver().draw(g,screen.getWidth(),screen.getHeight());
                 break;
             // to add a new scene : add a new case in draw() and update with tha same scene number
 
@@ -348,7 +363,7 @@ public class GameEngine extends GameCore
                 break;   
                 
             case 1:
-                // gameover
+            	
                 break;
             default:
                         // update player
@@ -466,11 +481,6 @@ public class GameEngine extends GameCore
                 player.setState(Creature.STATE_DYING);
                 numLives--;
                 if(numLives==0) {
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
                     setScene(1);
                 }
             }
@@ -522,15 +532,15 @@ public class GameEngine extends GameCore
         {
             if(my >= 200 && my <= 250 )
             {
-                setScene(-1);
-                
+                     setScene(-1);
             }
+            
             if(my >= 300 && my <= 350)
             { 
-            	//help pressed
-                setScene(3);
-                
+                   //help pressed
+                    setScene(3); 
             }
+            
             if(my >= 400 && my <= 450)
             { 
                 //Change pressed
@@ -570,6 +580,31 @@ public class GameEngine extends GameCore
 
      }
  
+ }
+
+
+ 
+ 
+ public void GameOverAction()
+ {   
+     int mx2 = inputManager.getMouseX();
+     int my2 =  inputManager.getMouseY();
+     int screenWidth2 = screen.getWidth();
+    
+     if(mx2 >= screenWidth2 / 2 - 90 && mx2 <= screenWidth2 / 2 +110)
+     {
+         if(my2 >= 200 && my2 <= 250 )
+         {
+         		 stop();
+         }
+         
+         if(my2 >= 300 && my2 <= 350)
+         { 
+         	
+                 new GameEngine().run();
+         }
+     }
+     
  }
 
     
