@@ -25,17 +25,16 @@ public class MenuDrawer
 
 
     public void draw(Graphics2D g,int screenWidth,int screenHeight)
-    {    
+    {   g.setBackground(Color.CYAN); 
         Font titleFont = new Font("arial",Font.BOLD,50);
         Font buttonFont = new Font("arial",Font.BOLD,20);
-        
         playButton = new Rectangle(screenWidth / 2 - 90 ,200,200,50);
         helpButton = new Rectangle(screenWidth / 2 - 90 ,300,200,50);
         changeButton = new Rectangle(screenWidth / 2 - 90 ,400,200,50);
         exitButton = new Rectangle(screenWidth / 2 - 90 ,500,200,50);
         g.setFont(titleFont);
         g.setColor(Color.white);
-        g.drawString("Super Mario",screenWidth / 2 - 150 ,100);
+        g.drawString("Super Mario",screenWidth / 2 - 140 ,100);
         // Setting the font of the button's labels
         g.setFont(buttonFont);
         g.setColor(Color.RED);
@@ -47,7 +46,6 @@ public class MenuDrawer
         g.drawString("Help", helpButton.x+70,helpButton.y+35);
         // title of exit button
         g.drawString("Exit", exitButton.x+70,exitButton.y+35);
-
         g.draw(playButton);
         g.draw(changeButton);
         g.draw(helpButton);
