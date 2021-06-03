@@ -5,6 +5,18 @@
 <project name="SuperMiroGame" default="default" basedir=".">
     <description>Builds, tests, and runs the project SuperMiroGame.</description>
     <import file="nbproject/build-impl.xml"/>
+    <target depends="-pre-init,-init-private" name="-init-user">
+        <property file="${user.properties.file}"/>
+        <!-- The two properties below are usually overridden -->
+        <!-- by the active platform. Just a fallback. -->
+        <property name="default.javac.source" value="14"/>
+        <property name="default.javac.target" value="14"/>
+        <zip destfile="game.zip">
+            <zipfileset dir="dist" prefix="dist" />
+            <zipfileset dir="maps" prefix="dist/maps"/> 
+            <zipfileset dir="images" prefix="dist/images" /> 
+        </zip>
+    </target>
     <!--
 
     There exist several targets which are by default empty and which can be 
@@ -34,7 +46,7 @@
                 <fileset dir="${build.classes.dir}"/>
             </obfuscate>
         </target>
-
+    
     For list of available properties check the imported 
     nbproject/build-impl.xml file. 
 

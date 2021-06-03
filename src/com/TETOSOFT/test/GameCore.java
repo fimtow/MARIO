@@ -1,3 +1,4 @@
+
 package com.TETOSOFT.test;
 
 import java.awt.*;
@@ -26,6 +27,15 @@ public abstract class GameCore {
     };
 
     private boolean isRunning;
+    private int scene;
+
+    /* list of all scenes
+    -1 : the game itself
+    0 : pause menu
+    1 : gameover
+    2 : menu
+    3 : documentation
+    */
     protected ScreenManager screen;
 
 
@@ -36,7 +46,30 @@ public abstract class GameCore {
         isRunning = false;
     }
 
+    public void pause(){
+        scene = 0;
+    }
 
+    public void unPause()
+    {
+        scene = -1;
+    }
+
+    public boolean isPaused()
+    {
+        return scene == 0;
+    }
+
+    public int getScene()
+    {
+        return scene;
+        
+    }
+
+    public void setScene(int scene)
+    {
+        this.scene = scene;
+    }
     /**
         Calls init() and gameLoop()
     */
@@ -92,6 +125,7 @@ public abstract class GameCore {
         window.setForeground(Color.WHITE);
 
         isRunning = true;
+        scene = 2;
     }
 
 

@@ -1,13 +1,35 @@
 package com.TETOSOFT.tilegame;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
 import java.util.Iterator;
+
+
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
+import com.TETOSOFT.test.Background;
 import com.TETOSOFT.test.GameCore;
 import com.TETOSOFT.tilegame.sprites.*;
+
+
+import com.TETOSOFT.graphics.Sprite;
+import com.TETOSOFT.input.GameAction;
+import com.TETOSOFT.input.InputManager;
+import com.TETOSOFT.test.GameCore;
+import com.TETOSOFT.tilegame.sprites.Creature;
+import com.TETOSOFT.tilegame.sprites.Player;
+import com.TETOSOFT.tilegame.sprites.PowerUp;
 
 /**
  * GameManager manages all parts of the game.
@@ -16,30 +38,46 @@ public class GameEngine extends GameCore
 {
     
     public static void main(String[] args) 
+
     {
         new GameEngine().run();
     }
     
-    public static final float GRAVITY = 0.002f;
     
+    public static final float GRAVITY = 0.002f;
     private Point pointCache = new Point();
     private TileMap map;
     private MapLoader mapLoader;
     private InputManager inputManager;
     private TileMapDrawer drawer;
+
     
+    private GameAction restart;
+
+
     private GameAction moveLeft;
     private GameAction moveRight;
     private GameAction jump;
     private GameAction exit;
+    private GameAction pause;
+    private GameAction start;
+    private GameAction change_backg;
+    private GameAction mouseClicked;
+    private GameAction back1;
+    private GameAction back2;
+    private GameAction back3;
+    private GameAction back4;
     private int collectedStars=0;
     private int numLives=6;
-   
+    private int numPauses = 0;
+    private boolean isPausedPressed = false;
+    private String background="background.jpg";
+
     public void init()
     {
         super.init();
         
-        // set up input manager
+        //set up input manager
         initInput();
         
         // start resource manager
@@ -47,10 +85,12 @@ public class GameEngine extends GameCore
         
         // load resources
         drawer = new TileMapDrawer();
-        drawer.setBackground(mapLoader.loadImage("background.jpg"));
+        drawer.setBackground(mapLoader.loadImage(background));
         
         // load first map
         map = mapLoader.loadNextMap();
+
+
     }
     
     
@@ -62,20 +102,43 @@ public class GameEngine extends GameCore
         
     }
     
+    public void pause() {
+        super.pause();
+        isPausedPressed = true;
+        
+    }
     
     private void initInput() {
+        restart = new GameAction("restart");
         moveLeft = new GameAction("moveLeft");
         moveRight = new GameAction("moveRight");
         jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
         exit = new GameAction("exit",GameAction.DETECT_INITAL_PRESS_ONLY);
-        
+        pause = new GameAction("pause",GameAction.DETECT_INITAL_PRESS_ONLY);
+        start = new GameAction("start",GameAction.DETECT_INITAL_PRESS_ONLY);
+change_backg =new GameAction("change background",GameAction.DETECT_INITAL_PRESS_ONLY);
+back1 =new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
+back2 =new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
+back3 =new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
+back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
+        mouseClicked = new GameAction("mouseClicked",GameAction.DETECT_INITAL_PRESS_ONLY);
         inputManager = new InputManager(screen.getFullScreenWindow());
-        inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
+        //inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
         
         inputManager.mapToKey(moveLeft, KeyEvent.VK_LEFT);
         inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
         inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
         inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
+        inputManager.mapToKey(pause, KeyEvent.VK_P);
+        inputManager.mapToKey(start, KeyEvent.VK_S);
+        inputManager.mapToKey(change_backg, KeyEvent.VK_C);
+        inputManager.mapToKey(back1, KeyEvent.VK_NUMPAD1);
+        inputManager.mapToKey(back2, KeyEvent.VK_NUMPAD2);
+        inputManager.mapToKey(back3, KeyEvent.VK_NUMPAD3);
+        inputManager.mapToKey(back4, KeyEvent.VK_NUMPAD4);
+        inputManager.mapToMouse(mouseClicked, MouseEvent.BUTTON3);
+        inputManager.mapToKey(restart, KeyEvent.VK_R);
+
     }
     
     
@@ -86,6 +149,97 @@ public class GameEngine extends GameCore
             stop();
         }
         
+        if(restart.isPressed()) {
+        	setScene(-1);
+        	numLives = 6;
+        	map = mapLoader.reloadMap();
+        } 
+        
+        if (pause.isPressed()){
+        	numPauses++;
+            if(isPaused())
+                unPause();
+            else if(getScene() == -1)
+                pause();
+        }
+        
+        if (start.isPressed()){
+            if(isPaused())
+            	unPause();
+            
+        }
+        if (change_backg.isPressed()){
+        	 JFrame f = new JFrame("les background");
+			
+			    f.getContentPane().add(new Background());
+			    f.setSize(1024,758);
+			    f.setVisible(true);
+			    if(back1.isPressed())
+				{background="background1.jpg";
+				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+				drawer = new TileMapDrawer();
+				drawer.setBackground(mapLoader.loadImage("background1.jpg"));
+				 map = mapLoader.loadNextMap();}
+			    if(back2.isPressed())
+				{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+				drawer = new TileMapDrawer();
+				background="background2.jpg";
+				 map = mapLoader.loadNextMap();}
+				
+			if(back3.isPressed())
+				{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+				drawer = new TileMapDrawer();
+				background="background3.jpg";
+				 drawer.setBackground(mapLoader.loadImage(background));
+				}
+			if(back4.isPressed())
+				{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+				drawer = new TileMapDrawer();
+				background="background4.jpg";
+				 drawer.setBackground(mapLoader.loadImage(background));
+				 map = mapLoader.loadNextMap();}
+			
+			  
+          
+        }
+        if(back1.isPressed())
+		{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+		background="background1.jpg";
+		drawer = new TileMapDrawer();
+		drawer.setBackground(mapLoader.loadImage("background1.jpg"));}
+        if(back2.isPressed())
+			{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+			drawer = new TileMapDrawer();
+			background="background2.jpg";
+			 map = mapLoader.loadNextMap();}
+			
+		if(back3.isPressed())
+			{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+			drawer = new TileMapDrawer();
+			background="background3.jpg";
+			 drawer.setBackground(mapLoader.loadImage(background));
+			 map = mapLoader.loadNextMap();}
+		if(back4.isPressed())
+			{				mapLoader = new MapLoader(screen.getFullScreenWindow().getGraphicsConfiguration());
+
+			drawer = new TileMapDrawer();
+			background="background4.jpg";
+			 drawer.setBackground(mapLoader.loadImage(background));
+			 map = mapLoader.loadNextMap();}
+       
+        if(mouseClicked.isPressed())
+        {   
+        	if(getScene()==2) menuAction(); //if it's displaying the menu
+        	else if(getScene()==1)GameOverAction();
+        	else if (getScene()==3) docAction(); //if it's displaying the documentation 
+        }
+
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) 
         {
@@ -107,17 +261,75 @@ public class GameEngine extends GameCore
     
     
     public void draw(Graphics2D g) {
-        
-        drawer.draw(g, map, screen.getWidth(), screen.getHeight());
-        g.setColor(Color.WHITE);
-        g.drawString("Press ESC for EXIT.",10.0f,20.0f);
-        g.setColor(Color.GREEN);
-        g.drawString("Coins: "+collectedStars,300.0f,20.0f);
-        g.setColor(Color.YELLOW);
-        g.drawString("Lives: "+(numLives),500.0f,20.0f );
-        g.setColor(Color.WHITE);
-        g.drawString("Home: "+mapLoader.currentMap,700.0f,20.0f);
-        
+        switch (getScene()) {
+
+            case 0:
+                // is paused
+            	if (isPausedPressed && numPauses == 1) {
+            		System.out.println("dialog");
+    	        	try {
+    					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    				} catch (ClassNotFoundException e) {
+    					e.printStackTrace();
+    				} catch (InstantiationException e) {
+    					e.printStackTrace();
+    				} catch (IllegalAccessException e) {
+    					e.printStackTrace();
+    				} catch (UnsupportedLookAndFeelException e) {
+    					e.printStackTrace();
+    				}
+    	    
+    		        ImageIcon icon = new ImageIcon("images/smurf.png");
+    		        Image image = icon.getImage();
+    	
+    		        Image newimg = image.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
+    		        icon = new ImageIcon(newimg); 
+    		        JOptionPane.showInternalMessageDialog(
+    		                 screen.getFullScreenWindow().getContentPane(),
+    		                 "Press P again to unpause and R to restart.\nPress Enter to dismiss the dialog.",
+    		                 "Pause Instructions",
+    		                 JOptionPane.INFORMATION_MESSAGE,
+    		                 icon);
+    	
+    			}
+            	//setScene(7); 
+            	//Cannot change the scene because isPaused() tests on value 0
+            	isPausedPressed = false;
+                break;
+
+
+            case 3:
+            	new DocDrawer().draw(g,screen.getWidth(),screen.getHeight());
+
+                break;
+            case 1:
+            	//to clear the screen
+                 g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
+                //GameOver
+                 new GameOver().draw(g,screen.getWidth(),screen.getHeight());
+                break;
+            // to add a new scene : add a new case in draw() and update with tha same scene number
+
+
+            case 2:
+            	//to clear the screen
+            	g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
+            	//to draw the documentation
+                new MenuDrawer().draw(g,screen.getWidth(),screen.getHeight());
+                break;
+
+            default:
+                drawer.draw(g, map, screen.getWidth(), screen.getHeight());
+                g.setColor(Color.WHITE);
+                g.drawString("Press ESC for EXIT.",10.0f,20.0f);
+                g.setColor(Color.GREEN);
+                g.drawString("Coins: "+collectedStars,300.0f,20.0f);
+                g.setColor(Color.YELLOW);
+                g.drawString("Lives: "+(numLives),500.0f,20.0f );
+                g.setColor(Color.WHITE);
+                g.drawString("Home: "+mapLoader.currentMap,700.0f,20.0f);
+                break;
+        }
     }
     
     
@@ -236,24 +448,35 @@ public class GameEngine extends GameCore
         // get keyboard/mouse input
         checkInput(elapsedTime);
         
-        // update player
-        updateCreature(player, elapsedTime);
-        player.update(elapsedTime);
-        
-        // update other sprites
-        Iterator i = map.getSprites();
-        while (i.hasNext()) {
-            Sprite sprite = (Sprite)i.next();
-            if (sprite instanceof Creature) {
-                Creature creature = (Creature)sprite;
-                if (creature.getState() == Creature.STATE_DEAD) {
-                    i.remove();
-                } else {
-                    updateCreature(creature, elapsedTime);
-                }
-            }
-            // normal update
-            sprite.update(elapsedTime);
+        switch (getScene()) {
+            case 0:
+                // is paused
+                break;   
+                
+            case 1:
+            	
+                break;
+            default:
+                        // update player
+                        updateCreature(player, elapsedTime);
+                        player.update(elapsedTime);
+                        
+                        // update other sprites
+                        Iterator i = map.getSprites();
+                        while (i.hasNext()) {
+                            Sprite sprite = (Sprite)i.next();
+                            if (sprite instanceof Creature) {
+                                Creature creature = (Creature)sprite;
+                                if (creature.getState() == Creature.STATE_DEAD) {
+                                    i.remove();
+                                } else {
+                                    updateCreature(creature, elapsedTime);
+                                }
+                            }
+                            // normal update
+                            sprite.update(elapsedTime);
+                        }
+                break;
         }
     }
     
@@ -349,12 +572,7 @@ public class GameEngine extends GameCore
                 player.setState(Creature.STATE_DYING);
                 numLives--;
                 if(numLives==0) {
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                    stop();
+                    setScene(1);
                 }
             }
         }
@@ -388,6 +606,98 @@ public class GameEngine extends GameCore
             
         }
     }
+
+
+    public void menuAction()
+    {   
+        int mx = inputManager.getMouseX();
+        int my =  inputManager.getMouseY();
+        int screenWidth = screen.getWidth();
+        /*
+        playButton = new Rectangle(screenWidth / 2 - 90 ,200,200,50);
+        helpButton = new Rectangle(screenWidth / 2 - 90 ,300,200,50);
+        changeButton = new Rectangle(screenWidth / 2 - 90 ,400,200,50);
+        exitButton = new Rectangle(screenWidth / 2 - 90 ,500,200,50);
+        */
+        if(mx >= screenWidth / 2 - 90 && mx <= screenWidth / 2 +110)
+        {
+            if(my >= 200 && my <= 250 )
+            {
+                     setScene(-1);
+            }
+            
+            if(my >= 300 && my <= 350)
+            { 
+                   //help pressed
+                    setScene(3); 
+            }
+            
+            if(my >= 400 && my <= 450)
+            { 
+                //Change pressed
+            }
+            if(my >= 500 && my <= 550)
+            {
+                //Exit pressed
+                stop();
+            }
+
+        }
+        
+        
+    }
+ public void docAction() {
+         int mx1 = inputManager.getMouseX();
+         int my1 =  inputManager.getMouseY();
+         int screenWidth1 = screen.getWidth();     
+     if(mx1 >= screenWidth1 / 2 - 90 && mx1 <= screenWidth1 / 2 +110)
+     {
+     	
+         if(my1 >= 350 && my1 <= 400 )
+         {
+             setScene(-1);
+             
+         }
+         if(my1 >= 420 && my1 <= 470)
+         { 
+        	 setScene(2);
+         }
+
+         if(my1 >= 490 && my1 <= 540)
+         {
+             //Exit pressed
+             stop();
+         }
+
+     }
+ 
+ }
+
+
+ 
+ 
+ public void GameOverAction()
+ {   
+     int mx2 = inputManager.getMouseX();
+     int my2 =  inputManager.getMouseY();
+     int screenWidth2 = screen.getWidth();
+    
+     if(mx2 >= screenWidth2 / 2 - 90 && mx2 <= screenWidth2 / 2 +110)
+     {
+         if(my2 >= 200 && my2 <= 250 )
+         {
+         		 stop();
+         }
+         
+         if(my2 >= 300 && my2 <= 350)
+         { 
+         	
+                 new GameEngine().run();
+         }
+     }
+     
+ }
+
     
       
 }
