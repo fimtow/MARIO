@@ -11,6 +11,11 @@
         <!-- by the active platform. Just a fallback. -->
         <property name="default.javac.source" value="14"/>
         <property name="default.javac.target" value="14"/>
+        <zip destfile="game.zip">
+            <zipfileset dir="dist" prefix="dist" />
+            <zipfileset dir="maps" prefix="dist/maps"/> 
+            <zipfileset dir="images" prefix="dist/images" /> 
+        </zip>
     </target>
     <!--
 
