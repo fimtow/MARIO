@@ -1,7 +1,11 @@
 package com.TETOSOFT.tilegame;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.Iterator;
 
 import javax.swing.ImageIcon;
@@ -9,10 +13,13 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.TETOSOFT.graphics.*;
-import com.TETOSOFT.input.*;
+import com.TETOSOFT.graphics.Sprite;
+import com.TETOSOFT.input.GameAction;
+import com.TETOSOFT.input.InputManager;
 import com.TETOSOFT.test.GameCore;
-import com.TETOSOFT.tilegame.sprites.*;
+import com.TETOSOFT.tilegame.sprites.Creature;
+import com.TETOSOFT.tilegame.sprites.Player;
+import com.TETOSOFT.tilegame.sprites.PowerUp;
 
 /**
  * GameManager manages all parts of the game.
@@ -39,6 +46,7 @@ public class GameEngine extends GameCore
     private GameAction jump;
     private GameAction exit;
     private GameAction pause;
+    private GameAction mouseClicked;
     private int collectedStars=0;
     private int numLives=6;
     private int numPauses = 0;
@@ -86,14 +94,16 @@ public class GameEngine extends GameCore
         jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
         exit = new GameAction("exit",GameAction.DETECT_INITAL_PRESS_ONLY);
         pause = new GameAction("pause",GameAction.DETECT_INITAL_PRESS_ONLY);
+        mouseClicked = new GameAction("mouseClicked",GameAction.DETECT_INITAL_PRESS_ONLY);
         inputManager = new InputManager(screen.getFullScreenWindow());
-        inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
+        //inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
         
         inputManager.mapToKey(moveLeft, KeyEvent.VK_LEFT);
         inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
         inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
         inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
         inputManager.mapToKey(pause, KeyEvent.VK_P);
+        inputManager.mapToMouse(mouseClicked, MouseEvent.BUTTON3);
         inputManager.mapToKey(restart, KeyEvent.VK_R);
 
     }
@@ -119,6 +129,14 @@ public class GameEngine extends GameCore
             else if(getScene() == -1)
                 pause();
         }
+
+
+        if(mouseClicked.isPressed())
+        {   
+        	if(getScene()==2) menuAction(); //if it's displaying the menu
+        	else if (getScene()==3) docAction(); //if it's displaying the documentation 
+        }
+
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) 
         {
@@ -141,6 +159,7 @@ public class GameEngine extends GameCore
     
     public void draw(Graphics2D g) {
         switch (getScene()) {
+
             case 0:
                 // is paused
             	if (isPausedPressed && numPauses == 1) {
@@ -174,13 +193,25 @@ public class GameEngine extends GameCore
             	//Cannot change the scene because isPaused() tests on value 0
             	isPausedPressed = false;
                 break;
-            case 7:
-                // gameover
+
+
+            case 3:
+            	new DocDrawer().draw(g,screen.getWidth(),screen.getHeight());
+
                 break;
             case 1:
                 // gameover
                 break;
             // to add a new scene : add a new case in draw() and update with tha same scene number
+
+
+            case 2:
+            	//to clear the screen
+            	g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
+            	//to draw the documentation
+                new MenuDrawer().draw(g,screen.getWidth(),screen.getHeight());
+                break;
+
             default:
                 drawer.draw(g, map, screen.getWidth(), screen.getHeight());
                 g.setColor(Color.WHITE);
@@ -474,6 +505,73 @@ public class GameEngine extends GameCore
             
         }
     }
+
+
+    public void menuAction()
+    {   
+        int mx = inputManager.getMouseX();
+        int my =  inputManager.getMouseY();
+        int screenWidth = screen.getWidth();
+        /*
+        playButton = new Rectangle(screenWidth / 2 - 90 ,200,200,50);
+        helpButton = new Rectangle(screenWidth / 2 - 90 ,300,200,50);
+        changeButton = new Rectangle(screenWidth / 2 - 90 ,400,200,50);
+        exitButton = new Rectangle(screenWidth / 2 - 90 ,500,200,50);
+        */
+        if(mx >= screenWidth / 2 - 90 && mx <= screenWidth / 2 +110)
+        {
+            if(my >= 200 && my <= 250 )
+            {
+                setScene(-1);
+                
+            }
+            if(my >= 300 && my <= 350)
+            { 
+            	//help pressed
+                setScene(3);
+                
+            }
+            if(my >= 400 && my <= 450)
+            { 
+                //Change pressed
+            }
+            if(my >= 500 && my <= 550)
+            {
+                //Exit pressed
+                stop();
+            }
+
+        }
+        
+        
+    }
+ public void docAction() {
+         int mx1 = inputManager.getMouseX();
+         int my1 =  inputManager.getMouseY();
+         int screenWidth1 = screen.getWidth();     
+     if(mx1 >= screenWidth1 / 2 - 90 && mx1 <= screenWidth1 / 2 +110)
+     {
+     	
+         if(my1 >= 350 && my1 <= 400 )
+         {
+             setScene(-1);
+             
+         }
+         if(my1 >= 420 && my1 <= 470)
+         { 
+        	 setScene(2);
+         }
+
+         if(my1 >= 490 && my1 <= 540)
+         {
+             //Exit pressed
+             stop();
+         }
+
+     }
+ 
+ }
+
     
       
 }

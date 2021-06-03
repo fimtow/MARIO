@@ -1,3 +1,9 @@
 build/
 dist/
+<<<<<<< HEAD
 /bin/
+=======
+bin/
+.classpath
+.project
+>>>>>>> 01cfea38ccbeca4cb46be238fbe8842e71b6ca0e
