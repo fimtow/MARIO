@@ -18,7 +18,7 @@ jobs:
           java-version: '14'
           distribution: 'adopt'
       - name: Build with Ant
-        run: ant compile
+        run: ant compile jar zip
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
