@@ -13,6 +13,12 @@ public class GameOver {
     private static final int BUTTON_HEIGHT = 10;
     public ScreenManager sc;
     public Rectangle exitButton,rejouerButton;
+    
+    public int score;
+    
+    public GameOver(int score) {
+    	this.score = score;
+    }
 
 
     public void update()
@@ -25,13 +31,20 @@ public class GameOver {
     {    
         Font titleFont = new Font("arial",Font.BOLD,50);
         Font buttonFont = new Font("arial",Font.BOLD,20);
+        Font scoreFont = new Font("arial", Font.PLAIN , 30);
         
         exitButton = new Rectangle(screenWidth / 2 - 90 ,200,200,50);
         rejouerButton = new Rectangle(screenWidth / 2 - 90 ,300,200,50);
        
         g.setFont(titleFont);
-        g.setColor(Color.white);
-        g.drawString("GameOver",screenWidth / 2 - 120 ,120);
+        g.setColor(Color.red);
+        g.drawString("GameOver",screenWidth / 2 - 120 ,120); 
+        
+        //Score
+        g.setFont(scoreFont);
+        g.setColor(Color.black);
+        g.drawString("Score: " + this.score, screenWidth - 130 , 40);
+        
         // Setting the font of the button's labels
         g.setFont(buttonFont);
         g.setColor(Color.RED);
