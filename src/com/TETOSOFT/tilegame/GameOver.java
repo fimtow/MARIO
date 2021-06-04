@@ -36,6 +36,7 @@ public class GameOver {
         exitButton = new Rectangle(screenWidth / 2 - 90 ,200,200,50);
         rejouerButton = new Rectangle(screenWidth / 2 - 90 ,300,200,50);
        
+        //Title
         g.setFont(titleFont);
         g.setColor(Color.red);
         g.drawString("GameOver",screenWidth / 2 - 120 ,120); 
@@ -43,7 +44,7 @@ public class GameOver {
         //Score
         g.setFont(scoreFont);
         g.setColor(Color.black);
-        g.drawString("Score: " + this.score, screenWidth - 130 , 40);
+        g.drawString("Score: " + this.score, screenWidth - 170 , 60);
         
         // Setting the font of the button's labels
         g.setFont(buttonFont);
