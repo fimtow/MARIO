@@ -306,7 +306,7 @@ back4=new GameAction("background",GameAction.DETECT_INITAL_PRESS_ONLY);
             	//to clear the screen
                  g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
                 //GameOver
-                 new GameOver().draw(g,screen.getWidth(),screen.getHeight());
+                 new GameOver(this.collectedStars).draw(g,screen.getWidth(),screen.getHeight());
                 break;
             // to add a new scene : add a new case in draw() and update with tha same scene number
 
