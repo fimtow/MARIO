@@ -43,7 +43,7 @@ public class GameOver {
         
         //Score
         g.setFont(scoreFont);
-        g.setColor(Color.black);
+        g.setColor(Color.white);
         g.drawString("Score: " + this.score, screenWidth - 170 , 60);
         
         // Setting the font of the button's labels
