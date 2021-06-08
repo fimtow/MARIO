@@ -1,0 +1,7 @@
+-------------------------------------------------------------------------------
+Test set: com.tests.TestOperations
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.446 s <<< FAILURE! - in com.tests.TestOperations
+the game should stop once we click on ESC button(Test game)  Time elapsed: 2.116 s  <<< FAILURE!
+java.lang.AssertionError: expected:<true> but was:<false>
+
