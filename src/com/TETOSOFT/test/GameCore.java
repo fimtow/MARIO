@@ -40,7 +40,11 @@ public abstract class GameCore {
     protected ScreenManager screen;
 
 
-    /**
+    public boolean isRunning() {
+		return isRunning;
+	}
+
+	/**
         Signals the game loop that it's time to quit
     */
     public void stop() {
