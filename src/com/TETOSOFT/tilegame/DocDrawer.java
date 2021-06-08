@@ -17,6 +17,7 @@ public class DocDrawer
     public ScreenManager sc;
     public Rectangle docplayButton,dochomeButton,docexitButton;
 
+    
 
     public void update()
     {
